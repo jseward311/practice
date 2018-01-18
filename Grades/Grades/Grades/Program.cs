@@ -11,28 +11,41 @@ namespace Grades
     {
         static void Main(string[] args)
         {
-            GradeBook book = new GradeBook();
+            IGradeTracker book = CreateGradeBook();
 
             //book.NameChanged += OnNameChanged;
             //book.Name = "Scott's Grade Books";
 
-            getBookName(book);
+            //getBookName(book);
             addGrades(book);
             saveGrades(book);
             writeResults(book);
+
+            Console.ReadLine();
         }
 
-        private static void writeResults(GradeBook book)
+        private static IGradeTracker CreateGradeBook()
+        {
+            return new ThrowAwayGradeBook();
+        }
+
+        private static void writeResults(IGradeTracker book)
         {
             GradeStatistics stats = book.ComputeStatistics();
-            Console.WriteLine(book.Name);
+
+            foreach (float grade in book)
+            {
+                Console.WriteLine(grade);
+            }
+
+            //Console.WriteLine(book.Name);
             WriteResult("Average", stats.AverageGrade);
             WriteResult("Highest", stats.HighestGrade);
             WriteResult("Lowest", (int)stats.LowestGrade);
             WriteResult(stats.Discription, stats.LetterGrade);
         }
 
-        private static void saveGrades(GradeBook book)
+        private static void saveGrades(IGradeTracker book)
         {
             using (StreamWriter outputfile = File.CreateText("grades.txt"))
             {
@@ -40,14 +53,14 @@ namespace Grades
             }
         }
 
-        private static void addGrades(GradeBook book)
+        private static void addGrades(IGradeTracker book)
         {
             book.AddGrade(91);
             book.AddGrade(89.5f);
             book.AddGrade(75);
         }
 
-        private static void getBookName(GradeBook book)
+        private static void getBookName(IGradeTracker book)
         {
             try
             {
